@@ -22,3 +22,10 @@ def convert_to_base_10(s,b)
   a.map!{|l| CHARS.index(l)}
   a.map.with_index{|n,i| n.to_i * (b ** i)}.reduce(:+)
 end
+
+def base_table(i,b)
+  i.to_s.length
+  table_length = (i.to_s.length / (b / 10).to_f).ceil
+  table = (1..table_length).to_a
+  table.map!.with_index{|n,i| n ** (i+1)}.reverse
+end
