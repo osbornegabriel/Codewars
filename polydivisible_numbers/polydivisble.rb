@@ -8,7 +8,13 @@ def is_polydivisible?(s, b)
 end
 
 def get_polydivisible(n, b)
-
+  return 'radix issue' if b > 36
+  test = 0
+  until n == 0 do
+    n -= 1 if is_polydivisible?(test.to_s(b),b)
+    return test.to_s(b).upcase if n == 0
+    test += 1
+  end
 end
 
 def convert_to_base_10(s,b)
