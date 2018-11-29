@@ -46,8 +46,8 @@ def convert_from_base_10(i,b)
 end
 
 def base_table(i,b)
-  i.to_s.length
-  table_length = (i.to_s.length / (b / 10).to_f).ceil
-  table = (1..table_length).to_a
-  table.map!.with_index{|n,i| n ** (i+1)}.reverse
+  table_length = (i.to_s.length / (b.to_f / 10)).ceil
+  table = (0..table_length).to_a
+  table.map!{|n| b ** (n)}
+  table.reverse
 end
