@@ -9,6 +9,12 @@ class Connect_Four
     @board = create_board
   end
 
+  def drop_checker(play)
+    column = checker[0]
+    color = checker[2]
+    @board[column][@board[column].index('')] = color
+  end
+
   def create_board
     columns = ('A'..'G').to_a
     board = Hash.new
@@ -18,4 +24,4 @@ class Connect_Four
 
 end
 
-p Connect_Four.new.board
+p Connect_Four.new
