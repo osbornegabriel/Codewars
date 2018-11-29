@@ -42,7 +42,7 @@ def convert_from_base_10(i,b)
     solution.push(CHARS[value])
     i %= d
   end
-  solution.join
+  solution.join.sub!(/^0*/,"")
 end
 
 def base_table(i,b)
