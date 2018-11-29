@@ -3,11 +3,12 @@ def who_is_winner(pieces_position_list)
 end
 
 class Connect_Four
-  attr_accessor :board
+  attr_accessor :board, :winner
 
   def initialize
     @board = create_board
     @game_over = false
+    @winner = "Draw"
   end
 
   def create_board
@@ -17,18 +18,36 @@ class Connect_Four
     board
   end
 
+  def play_game(game_sequence)
+    game_sequence.each do |move|
+      drop_checker(move)
+      check_board
+      break if @game_over
+    end
+    @winner
+  end
+
+  def check_board
+    check_columns
+    check_rows
+  end
+
+  def check_lines(lines)
+    lines.each{|line| check_line(line)}
+  end
+
   def check_columns
-    @board.each{|column| check_line(column)}
+    check_lines(@board)
   end
 
   def check_rows
-    rows = create_rows
-    rows.each{|row| check_line(row)}
+    check_lines(rows)
   end
 
   def check_line(line)
-    four = line.join.scan(/R{4}/)
-    @game_over = four
+    four = line.join.scan(/(Red|Yellow)\1{3}/)
+    @game_over = !!four[0]
+    @winner = four[0][0] if four[0]
   end
 
   def check_row(row_index)
@@ -36,7 +55,7 @@ class Connect_Four
     check_line(row)
   end
 
-  def create_rows
+  def rows
     (0..5).to_a.map{|index| create_row(index)}
   end
 
@@ -46,12 +65,8 @@ class Connect_Four
 
   def drop_checker(checker)
     column = checker[0]
-    color = checker[2]
+    color = checker[2..-1]
     @board[column][@board[column].index('')] = color
-  end
-
-  def play_checkers(moves)
-    moves.each{|move| drop_checker(move)}
   end
 
 end
@@ -67,7 +82,9 @@ game =   ["A_Red",
   "B_Yellow",
   "G_Red",
   "B_Yellow"]
-board.play_checkers(game)
+p board.play_game(game)
+board.winner
 p board
-p board.create_row(0)
-p board.create_rows
+# p board
+# p board.create_row(0)
+# p board.check_rows
