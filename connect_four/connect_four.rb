@@ -1,10 +1,11 @@
+# who_is_winner is the provided method name for challenge
 def who_is_winner(pieces_position_list)
   board = Connect_Four.new
   board.play_game(pieces_position_list)
 end
 
 class Connect_Four
-  attr_accessor :board, :winner
+  attr_reader :board, :winner
 
   def initialize
     @board = create_board
@@ -30,101 +31,9 @@ class Connect_Four
   end
 
   def check_board
-    check_columns
-    check_rows
-    check_diagonal
-  end
-
-  def check_lines(lines)
-    lines.each{|line| check_line(line); break if @game_over}
-  end
-
-  def check_diagonal
-    check_lines(first_column_start + two_to_four_column_start)
-    check_lines(four_to_six_column_start + last_column_start)
-  end
-
-  def rev_construct_diagonal(column_i,row_i)
-    columns = @board.values
-    diagonal = []
-    until row_i > 5 || column_i < 0
-      diagonal << columns[column_i][row_i]
-      column_i -= 1
-      row_i += 1
-    end
-    diagonal
-  end
-
-  def construct_diagonal(column_i,row_i)
-    columns = @board.values
-    diagonal = []
-    until row_i > 5 || column_i > 6
-      diagonal << columns[column_i][row_i]
-      column_i += 1
-      row_i += 1
-    end
-    diagonal
-  end
-
-  def first_column_start
-    [
-      construct_diagonal(0,0),
-      construct_diagonal(0,1),
-      construct_diagonal(0,2)
-    ]
-  end
-
-  def two_to_four_column_start
-    [
-      construct_diagonal(1,0),
-      construct_diagonal(2,0),
-      construct_diagonal(3,0)
-    ]
-  end
-
-  def four_to_six_column_start
-    [
-      rev_construct_diagonal(3,0),
-      rev_construct_diagonal(4,0),
-      rev_construct_diagonal(5,0)
-    ]
-  end
-
-  def last_column_start
-    [
-      rev_construct_diagonal(6,0),
-      rev_construct_diagonal(6,1),
-      rev_construct_diagonal(6,2)
-    ]
-  end
-
-  def check_columns
-    check_lines(@board)
-  end
-
-  def check_rows
+    check_lines(columns)
     check_lines(rows)
-  end
-
-  def check_line(line)
-
-    four = line.join.scan(/(Red|Yellow)\1{3}/)
-    @game_over = true if !!four[0]
-    p @winner = four[0][0] if four[0]
-  end
-
-  def check_row(row_index)
-    row = create_row(row_index)
-    check_line(row)
-  end
-
-  def rows
-#     (0..6).to_a.map{|index| create_row(index)}
-      @board.values.transpose
-  end
-
-  def create_row(row_index)
-    @board.values.map{|column| column[row_index]}
+    check_lines(diagonals)
   end
 
   def drop_checker(checker)
@@ -133,7 +42,67 @@ class Connect_Four
     @board[column][@board[column].index('0')] = color
   end
 
-  #Fun visualization to aid potential debugging
+  def check_lines(lines)
+    lines.each{|line| check_line(line); break if @game_over}
+  end
+
+  def check_line(line)
+    four = line.join.scan(/(Red|Yellow)\1{3}/)
+    @game_over = true if !!four[0]
+    @winner = four[0][0] if four[0]
+  end
+
+  def columns
+    @board.values
+  end
+
+  def rows
+    @board.values.transpose
+  end
+
+  def diagonals
+    edges_diagonals + center_diagonals
+  end
+
+  def edges_diagonals
+    diagonals = Array.new
+    3.times do |i|
+      diagonals << construct_diagonal(0,i)
+      diagonals << rev_construct_diagonal(0,i)
+    end
+    diagonals
+  end
+
+  def center_diagonals
+    diagonals = Array.new
+    3.times do |i|
+      diagonals << construct_diagonal(i + 1,0)
+      diagonals << rev_construct_diagonal(i + 1,0)
+    end
+    diagonals
+  end
+
+  def rev_construct_diagonal(column_i,row_i)
+    rev_columns = @board.values.reverse
+    diagonal_seq(column_i,row_i,rev_columns)
+  end
+
+  def construct_diagonal(column_i,row_i)
+    columns = @board.values
+    diagonal_seq(column_i,row_i,columns)
+  end
+
+  def diagonal_seq(column_i,row_i,board)
+    diagonal = []
+    until row_i > 5 || column_i > 6
+      diagonal << board[column_i][row_i]
+      column_i += 1
+      row_i += 1
+    end
+    diagonal
+  end
+
+  #Fun visualization tool
   def visualize_gameboard
     visual = @board.values.transpose.reverse
     visual.map!{|row| filter_first_letter(row)}
@@ -143,5 +112,4 @@ class Connect_Four
   def filter_first_letter(a)
     a.map!{|word| word[0] || 0}
   end
-
 end
