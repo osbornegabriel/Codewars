@@ -15,7 +15,7 @@ class Connect_Four
   def create_board
     columns = ('A'..'G').to_a
     board = Hash.new
-    columns.each {|column| board[column] = [''] * 6}
+    columns.each {|column| board[column] = ['0'] * 6}
     board
   end
 
@@ -23,8 +23,7 @@ class Connect_Four
     game_sequence.each do |move|
       drop_checker(move)
       check_board
-      # visualize_gameboard if @game_over
-      # break if @game_over
+      break if @game_over
     end
     visualize_gameboard
     @winner
@@ -108,9 +107,10 @@ class Connect_Four
   end
 
   def check_line(line)
+
     four = line.join.scan(/(Red|Yellow)\1{3}/)
     @game_over = true if !!four[0]
-    @winner = four[0][0] if four[0]
+    p @winner = four[0][0] if four[0]
   end
 
   def check_row(row_index)
@@ -119,7 +119,8 @@ class Connect_Four
   end
 
   def rows
-    (0..5).to_a.map{|index| create_row(index)}
+#     (0..6).to_a.map{|index| create_row(index)}
+      @board.values.transpose
   end
 
   def create_row(row_index)
@@ -129,7 +130,7 @@ class Connect_Four
   def drop_checker(checker)
     column = checker[0]
     color = checker[2..-1]
-    @board[column][@board[column].index('')] = color
+    @board[column][@board[column].index('0')] = color
   end
 
   #Fun visualization to aid potential debugging
