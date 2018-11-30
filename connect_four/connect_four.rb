@@ -1,5 +1,6 @@
 def who_is_winner(pieces_position_list)
-  #le code
+  board = Connect_Four.new
+  board.play_game(pieces_position_list)
 end
 
 class Connect_Four
@@ -30,10 +31,69 @@ class Connect_Four
   def check_board
     check_columns
     check_rows
+    check_diagonal
   end
 
   def check_lines(lines)
     lines.each{|line| check_line(line)}
+  end
+
+  def check_diagonal
+    check_lines(first_column_start + two_to_four_column_start + four_to_six_column_start + last_column_start)
+  end
+
+  def rev_construct_diagonal(column_i,row_i)
+    columns = @board.values.reverse
+    diagonal = []
+    until row_i > 5 || column_i > 6
+      diagonal << columns[column_i][row_i]
+      column_i += 1
+      row_i += 1
+    end
+    diagonal
+  end
+
+  def construct_diagonal(column_i,row_i)
+    columns = @board.values
+    diagonal = []
+    until row_i > 5 || column_i > 6
+      diagonal << columns[column_i][row_i]
+      column_i += 1
+      row_i += 1
+    end
+    diagonal
+  end
+
+  def first_column_start
+    [
+      construct_diagonal(0,0),
+      construct_diagonal(0,1),
+      construct_diagonal(0,2)
+    ]
+  end
+
+  def two_to_four_column_start
+    [
+      construct_diagonal(1,0),
+      construct_diagonal(2,0),
+      construct_diagonal(3,0)
+    ]
+  end
+
+  def four_to_six_column_start
+    [
+      rev_construct_diagonal(1,0),
+      rev_construct_diagonal(2,0),
+      rev_construct_diagonal(3,0)
+    ]
+  end
+
+  def last_column_start
+    [
+      rev_construct_diagonal(0,0),
+      rev_construct_diagonal(0,1),
+      rev_construct_diagonal(0,2)
+    ]
   end
 
   def check_columns
@@ -46,8 +106,8 @@ class Connect_Four
 
   def check_line(line)
     four = line.join.scan(/(Red|Yellow)\1{3}/)
-    @game_over = !!four[0]
-    @winner = four[0][0] if four[0]
+    @game_over = true if !!four[0]
+    @winner = four[0][0] if four[0] && !@winner
   end
 
   def check_row(row_index)
