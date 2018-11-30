@@ -23,9 +23,10 @@ class Connect_Four
     game_sequence.each do |move|
       drop_checker(move)
       check_board
-      visualize_gameboard if @game_over
-      break if @game_over
+      # visualize_gameboard if @game_over
+      # break if @game_over
     end
+    visualize_gameboard
     @winner
   end
 
@@ -133,25 +134,13 @@ class Connect_Four
 
   #Fun visualization to aid potential debugging
   def visualize_gameboard
-    @board.values.transpose.reverse.each{|row| p row}
+    visual = @board.values.transpose.reverse
+    visual.map!{|row| filter_first_letter(row)}
+    visual.each{|row| p row.join}
+  end
+
+  def filter_first_letter(a)
+    a.map!{|word| word[0] || 0}
   end
 
 end
-
-# p board = Connect_Four.new
-# # board.drop_checker("A_Red")
-# # p board.board
-# game =   ["A_Red",
-#   "B_Yellow",
-#   "A_Red",
-#   "B_Yellow",
-#   "A_Red",
-#   "B_Yellow",
-#   "G_Red",
-#   "B_Yellow"]
-# p board.play_game(game)
-# board.winner
-# p board
-# # p board
-# # p board.create_row(0)
-# # p board.check_rows
