@@ -13,11 +13,12 @@ module Enumerable
     end
     values = Array(self)
     i = values.size - 1
+    result = operation.first if operation.first.is_a?(Array)
+    result << self[0] if operation.first.is_a?(Array)
     i.times do |i|
       index = i + 1
       result ||= values[i]
       result = yield(result, values[index])
-      result
     end
     result
   end
